@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{/layout/fragments :: header (~{:: #title}, ~{:: #customStyle})}">
+    <th:block id="title">DeepUP | Tạo bài viết</th:block>
+</head>
+
+<body>
+    <div th:replace="~{/layout/fragments :: navbar}"></div>
+    <div th:replace="~{/layout/fragments :: topic-bar}"></div>
+
+    <div class="container mt-5" style="padding-left: 10%; padding-right: 10%">
+        <form th:action="@{/create-post}" th:object="${postChangeRequest}" enctype="multipart/form-data" method="post">
+            <!-- row1 -->
+            <div class="row">
+                <div class="col-2">
+                    <!-- topic select -->
+                    <select th:field="*{topicId}" class="form-select form-select mb-3 h-100 fw-bold w-100 shadow"
+                        aria-label=".form-select-lg example">
+                        <option value="-1" selected>Chọn chủ đề</option>
+                        <th:block th:each="topic : ${topics}">
+                            <option th:value="${topic.id}" th:text="${topic.name}"></option>
+                        </th:block>
+                    </select>
+                </div>
+
+                <div class="col">
+                    <!-- title -->
+                    <input th:field="*{title}" type="text" class="form-control d-inline w-100 h-100 fw-bold shadow" id=""
+                        placeholder="Nhập tiêu đề...">
+                </div>
+            </div>
+            <small th:if="${#fields.hasErrors('topicId')}" th:errors="*{topicId}" class="form-text text-danger"></small>
+            <div></div>
+            <small th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="form-text text-danger"></small>
+
+            <!-- row2 -->
+            <div class="row mt-2 mb-2" style="padding-left: 1.25%; padding-right: 1.25%;">
+                <!-- title -->
+                <textarea th:field="*{subtitle}" class="form-control" rows="3" placeholder="Nhập mô tả bài viết..."></textarea>
+            </div>
+            <small th:if="${#fields.hasErrors('subtitle')}" th:errors="*{subtitle}" class="form-text text-danger"></small>
+            <div></div>
+
+            <!-- row3 -->
+            <label for="content-editor" class="form-label mt-3 ms-1">Nội dung bài viết</label>
+            <textarea th:field="*{content}" id="content-editor" class="form-control" rows="3" ></textarea>
+            <small th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="form-text text-danger"></small>
+            <div></div>
+
+            <!-- image -->
+            <label for="formFile" class="form-label mt-3 ms-1">Chọn ảnh cho bài viết</label>
+            <input th:field="*{image}" accept="image/*" class="form-control" type="file" id="formFile">
+            <input th:field="*{id}" hidden
+            >
+            <div class="text-center">
+                <button type="submit" class="btn btn-success mt-3 fw-bold" style="width: 17%;"><i class="bi bi-cursor"></i> Đăng bài</button>
+            </div>
+
+        </form>
+    </div>
+
+    <div th:replace="~{/layout/fragments :: footer}"></div>
+    <div th:replace="~{/layout/fragments :: script}"></div>
+</body>
+
+</html>

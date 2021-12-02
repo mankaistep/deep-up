@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{/layout/fragments :: header (~{:: #title}, ~{:: #customStyle})}">
+    <th:block id="title">DeepUP | Hồ sơ</th:block>
+</head>
+
+<body>
+    <div th:replace="~{/layout/fragments :: navbar}"></div>
+    <div th:replace="~{/layout/fragments :: topic-bar}"></div>
+    <div th:replace="~{/layout/profile-fragments :: profile(${profile}, ${2}, ~{:: #profileEdit})}"></div>
+
+    <!-- info -->
+    <div hidden>
+        <div id="profileEdit">
+            <form class="mt-4" th:action="@{/profile}" th:object="${profileEditRequest}"
+                  enctype="multipart/form-data" method="post" style="max-width: 50%;">
+                <!-- error line -->
+                <p class="text-center text-danger" th:text="${error}"></p>
+
+                <!-- nick -->
+                <div class="mb-3">
+                    <label for="nick" class="form-label">Định danh</label>
+                    <input th:field="*{nick}" class="form-control" id="nick">
+                    <small th:if="${#fields.hasErrors('nick')}" th:errors="*{nick}"
+                           class="form-text text-danger"></small>
+                </div>
+
+                <!-- full name -->
+                <div class="mb-3">
+                    <label for="fullName" class="form-label">Tên đầy đủ</label>
+                    <input th:field="*{fullName}" class="form-control" id="fullName">
+                    <small th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"
+                           class="form-text text-danger"></small>
+                </div>
+
+                <!-- email -->
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input th:field="*{email}" type="email" class="form-control" id="email">
+                    <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
+                           class="form-text text-danger"></small>
+                </div>
+
+                <!-- avatar -->
+                <div class="mb-3">
+                    <label for="avatar" class="form-label">Ảnh đại diện</label>
+                    <input th:field="*{avatar}" accept="image/*" type="file" class="form-control" id="avatar">
+                </div>
+
+                <!-- wallpaper -->
+                <div class="mb-3">
+                    <label for="wallpaper" class="form-label">Ảnh bìa</label>
+                    <input th:field="*{wallpaper}" accept="image/*" type="file" class="form-control" id="wallpaper">
+                </div>
+
+                <!-- facebook -->
+                <div class="mb-3">
+                    <label for="fb" class="form-label">Liên kết Facebook</label>
+                    <input th:field="*{facebook}" placeholder="Ví dụ: https://www.facebook.com/realmankaistep/" class="form-control" id="fb">
+                    <small th:if="${#fields.hasErrors('facebook')}" th:errors="*{facebook}" class="form-text text-danger"></small>
+                </div>
+
+                <!-- github -->
+                <div class="mb-3">
+                    <label for="gh" class="form-label">Liên kết Github</label>
+                    <input th:field="*{github}" placeholder="Ví dụ: https://github.com/mankaistep" class="form-control" id="gh">
+                    <small th:if="${#fields.hasErrors('github')}" th:errors="*{github}" class="form-text text-danger"></small>
+                </div>
+
+                <button type="submit" class="btn btn-success mt-3"><i class="bi bi-check-lg"></i> Thay đổi thông tin</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- modal -->
+    <div th:if="${param.successful != null}">
+        <div class="modal fade" id="successfulModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Thành công</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Thay đổi thông tin thành công
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- footer & script -->
+    <div th:replace="~{/layout/fragments :: footer}"></div>
+    <div th:replace="~{/layout/fragments :: script}"></div>
+
+    <script type="text/javascript">
+        $(window).on('load', function() {
+            $('#successfulModal').modal('show');
+        });
+
+        window.scrollTo(0, 500);
+    </script>
+</body>
+
+</html>

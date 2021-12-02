@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{/layout/fragments :: header (~{:: #title}, ~{:: #customStyle})}">
+    <th:block id="title" th:text="'DeepUP | ' + ${post.title}"></th:block>
+</head>
+
+<body>
+    <div th:replace="~{/layout/fragments :: navbar}"></div>
+    <div th:replace="~{/layout/fragments :: topic-bar}"></div>
+    <div th:replace="~{/layout/fragments :: topic-quote}"></div>
+
+    <div class="mt-5 shadow-sm rounded py-4" style="background-image: linear-gradient(to bottom right, #ffffff, #f1faf5); margin-left: 17%; margin-right: 17%; padding-left: 10%; padding-right: 10%">
+        <div>
+            <!-- row1 -->
+            <div class="row pt-lg-5">
+                <div class="col">
+                    <p class="ms-1 text-uppercase fs-5" style="line-height: 0.9" th:text="${post.topic}">
+                        TOPIC
+                    </p>
+                    <div th:if="${post.editDate == null}" class="ms-1 fw-lighter" style="text-align: left" th:text="${post.creationDate}">
+                        CREATION DATE
+                    </div>
+                    <div th:unless="${post.editDate == null}" class="ms-1 fw-lighter" style="text-align: left" th:text="'Đã chỉnh sửa vào ' + ${post.editDate}">
+                        CREATION DATE
+                    </div>
+                </div>
+
+                <!-- mark -->
+                <div class="col fs-3" style="text-align: right">
+                    <button id="dumamark" onclick="mark(this.id)" th:attr="data-marked=${post.marked}" class="d-inline" style="background: transparent; border: none !important;"
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="Lưu bài viết" >
+                        <th:block th:if="${post.marked}">
+                            <i class="bi bi-bookmark-check-fill text-success"></i>
+                        </th:block>
+                        <th:block th:unless="${post.marked}">
+                            <i class="bi bi-bookmark text-success"></i>
+                        </th:block>
+                    </button>
+                </div>
+            </div>
+
+            <div class="fw-bold" th:text="${post.title}" style="font-size: 40px">
+                TITLE
+            </div>
+
+            <!-- row2 -->
+            <div class="fw-bold text-secondary" th:text="${post.subtitle}">
+                SUBTITLE
+            </div>
+
+            <div class="d-flex mt-3 mb-5">
+                <!-- avt -->
+                <img class="rounded-circle"
+                      th:src="@{'/' + ${@environment.getProperty('storage.avatars')} + '/' + ${post.avatar}}" alt=""
+                      style="width: 65px; height: 65px">
+
+                <!-- name + date -->
+                <div class="ms-2 mt-2 d-flex flex-column">
+                    <div class="h6 fw-bold" th:text="${post.userFullname}" style="margin-bottom: 0; padding-bottom: 0">
+                        USER FULLNAME
+                    </div>
+                    <a class="text-secondary" th:href="@{'/user/' + ${post.nick}}" style="text-decoration: none; margin-top: 0; padding-top: 0">
+                        <th:block style="font-size: 13px" th:text="'user/' + ${post.nick}">
+                            USERNAME
+                        </th:block>
+                    </a>
+
+                </div>
+
+            </div>
+
+            <div id="postContent" class="mb-5 text-dark" style="font-size: 20px" th:utext="${post.content}">
+                CONTENT
+            </div>
+
+            <!-- votes + views -->
+            <div class="row pt-lg-5 mb-5">
+                <div class="col">
+                    <button id="upvote" class="d-inline" onclick="upvote()" style="background: transparent; border: none !important;"></button>
+                    <div id="votes" class="d-inline-block fs-5 text-center" style="width: 50px;" th:text="${post.votes}">
+                        UPVOTE
+                    </div>
+                    <button id="downvote" class="d-inline" onclick="downvote()" style="background: transparent; border: none !important;"></button>
+                </div>
+                <div class="col pt-2" style="text-align: right">
+                    <i class="d-inline fs-5 bi bi-eye-fill"></i>
+                    <div class="d-inline fs-5" th:text="${post.views}">
+                        VIEWS
+                    </div>
+                </div>
+            </div>
+
+            <!-- button edit -->
+            <div sec:authorize="isAuthenticated()" th:if="${#strings.equals(post.username, user.username)}" class="mb-5 text-dark">
+                <a href="edit" class="btn btn-outline-success"><i class="bi bi-pencil-fill"></i> Chỉnh sửa bài viết</a>
+
+                <button th:unless="${post.hidden}" onclick="showDelete()" class="ms-2 btn btn-outline-danger"><i class="bi bi-bookmark-dash-fill"></i> Ẩn bài viết</button>
+                <a th:if="${post.hidden}" href="showHidden" class="ms-2 btn btn-primary"><i class="bi bi-box-arrow-in-up"></i> Hiện bài viết</a>
+            </div>
+        </div>
+    </div>
+
+    <div sec:authorize="!isAuthenticated()" class="border text-center pt-4 mt-5 mb-5 shadow" style="margin-left: 25%; margin-right: 25%; height: 100px;">
+        <button class="btn btn-success btn-lg d-inline"><a href="/login" class="text-light" style="text-decoration: none;">Đăng nhập</a></button>
+        <div class="ms-1 d-inline fs-5">
+            <div class="pt-1 mt-5 d-inline">để tham gia bình luận</div>
+        </div>
+    </div>
+
+    <div class="border-start border-end mt-5" style="margin-left: 23%; margin-right: 23%;">
+        <div sec:authorize="isAuthenticated()" class="row py-2 mx-3 mb-3" style="margin-left: 6%; margin-right: 6%;">
+            <form action="comment-upload" method="post">
+                <input type="hidden" name="parentId" value="-1">
+                <div class="form-group">
+                    <textarea name="content" class="form-control textarea-autosize" data-resizable="true" placeholder="Chia sẻ cảm nghĩ của bạn về bài viết..." rows="3" style="overflow: hidden; border: none" required></textarea>
+                </div>
+                <div style="text-align: right;">
+                    <button type="submit" class="btn btn-outline-success mt-2" style="width: 10%; border: none;">
+                        Gửi
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- comment -->
+        <th:block th:each="comment : ${comments}">
+            <div th:replace="~{/layout/fragments :: comment (${comment})}"></div>
+        </th:block>
+    </div>
+
+    <!-- not logged noti -->
+    <div th:unless="${logged}">
+        <div class="modal fade" id="notLogged" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Không thể tương tác</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Đăng nhập để có thể thực hiện thao tác này
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <a href="/login">
+                            <button type="button" class="btn btn-success">Đăng nhập</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal create -->
+    <div th:if="${create}">
+        <div class="modal fade" id="successfulModal" tabindex="-1" aria-labelledby="createmodeal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createmodeal">Thành công!</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Bạn vừa làm gì đó thành công
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="modal fade" id="hideModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Bạn chắc chưa?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Bạn có chắc là muốn ẩn bài viết, người khác sẽ không thể xem bài này
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Thui</button>
+                        <a href="hide" type="button" class="btn btn-outline-danger">Ẩn</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- footer & script -->
+    <div th:replace="~{/layout/fragments :: footer}"></div>
+    <div th:replace="~{/layout/fragments :: script}"></div>
+
+    <script type="text/javascript">
+        $(window).on('load', function() {
+            $('#successfulModal').modal('show');
+        });
+
+        function showDelete() {
+            $('#hideModal').modal('show');
+        }
+    </script>
+
+    <script>
+
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            var scrollpos = localStorage.getItem('scrollpos');
+            if (scrollpos) window.scrollTo(0, scrollpos);
+        });
+
+        window.onbeforeunload = function(e) {
+            localStorage.setItem('scrollpos', window.scrollY);
+        };
+    </script>
+
+    <!-- postvote script -->
+    <script th:inline="javascript">
+        
+        var postId = [[${post.id}]];
+        var username = [[${user != null} ? ${user.username} : null]];
+
+        var upvoted = [[${upVote}]];
+        var downvoted = [[${downVote}]];
+        var logged = [[${logged}]];
+
+        changeDefault();
+        if (upvoted) changeUpvote();
+        if (downvoted) changeDownvote();
+
+        function changeUpvote() {
+            document.getElementById("upvote").innerHTML = "<i class=\"text-success fs-3 bi bi-caret-up-fill\"></i>";
+            document.getElementById("downvote").innerHTML = "<i class=\"text-success fs-3 bi bi-caret-down\"></i>";
+        }
+
+        function changeDownvote() {
+            document.getElementById("upvote").innerHTML = "<i class=\"text-success fs-3 bi bi-caret-up\"></i>";
+            document.getElementById("downvote").innerHTML = "<i class=\"text-success fs-3 bi bi-caret-down-fill\"></i>";
+        }
+
+        function changeDefault() {
+            document.getElementById("upvote").innerHTML = "<i class=\"text-success fs-3 bi bi-caret-up\"></i>";
+            document.getElementById("downvote").innerHTML = "<i class=\"text-success fs-3 bi bi-caret-down\"></i>";
+        }
+
+        function upvote() {
+            if (!checkLogged()) return;
+            sendUpvote();
+            if (!logged) return;
+
+            let votes = parseInt(document.getElementById("votes").innerText);
+
+            if (upvoted) {
+                changeDefault();
+
+                votes -= 1;
+                document.getElementById("votes").innerHTML = "" + votes;
+
+                upvoted = false;
+            }
+            else {
+                changeUpvote();
+
+                if (downvoted) votes += 2;
+                else votes += 1;
+                document.getElementById("votes").innerHTML = "" + votes;
+
+                upvoted = true;
+                downvoted = false;
+            }
+
+        }
+
+        function downvote() {
+            if (!checkLogged()) return;
+            sendDownvote();
+            if (!logged) return;
+
+            let votes = parseInt(document.getElementById("votes").innerText);
+
+            if (downvoted) {
+                changeDefault();
+
+                votes += 1;
+                document.getElementById("votes").innerHTML = "" + votes;
+
+                downvoted = false;
+            }
+            else {
+                changeDownvote();
+
+                if (upvoted) votes -= 2;
+                else votes -= 1;
+                document.getElementById("votes").innerHTML = "" + votes;
+
+                downvoted = true;
+                upvoted = false;
+            }
+
+        }
+
+        function checkLogged() {
+            if (logged) return true;
+            $('#notLogged').modal('show');
+            return false;
+        }
+
+        function sendUpvote() {
+            const req = new XMLHttpRequest();
+            req.open("POST", "/vote/upvote?postId=" + postId + "&username=" + username);
+            req.send();
+        }
+
+        function sendDownvote() {
+            const req = new XMLHttpRequest();
+            req.open("POST", "/vote/downvote?postId=" + postId + "&username=" + username);
+            req.send();
+        }
+
+    </script>
+
+    <!-- comment show script -->
+    <script>
+
+        function resizeTextarea(id) {
+            var a = document.getElementById(id);
+            a.style.height = 'auto';
+            a.style.height = a.scrollHeight + 'px';
+        }
+
+        function showCommentEnter(id, parentId) {
+            let shown = document.getElementById(id).getAttribute("data-shown") === 'true';
+            if (!shown) {
+                document.getElementById(id).setAttribute("data-shown", true);
+
+                const req = new XMLHttpRequest();
+
+                req.onreadystatechange = function () {
+                    document.getElementById("enter-" + id).innerHTML = this.responseText.replace("%parentId%", parentId);
+                    autoResize();
+                };
+
+                req.open("GET", "/html-templates/comment-enter.html");
+                req.send();
+            }
+            else {
+                document.getElementById(id).setAttribute("data-shown", false);
+                document.getElementById("enter-" + id).innerHTML = '';
+            }
+        }
+    </script>
+
+    <!-- comment vote script -->
+    <script>
+        function upvoteComment(id) {
+            if (!checkLogged()) return;
+
+            var cmtId = id.replace('comment-upvote-', '');
+            sendUpvoteComment(cmtId);
+
+            var vote = parseInt(document.getElementById("comment-votes-" + cmtId).innerText);
+
+            var upvoted = document.getElementById(id).getAttribute("data-upvoted") === 'true';
+            var downvoted = document.getElementById("comment-downvote-" + cmtId).getAttribute("data-downvoted") === 'true';
+            if (!upvoted) {
+                document.getElementById(id).innerHTML = "<i class=\"text-success fs-5 bi bi-caret-up-fill\"></i>";
+                document.getElementById(id).setAttribute("data-upvoted", true);
+
+                if (downvoted) {
+                    document.getElementById("comment-downvote-" + cmtId).innerHTML = "<i class=\"text-success fs-5 bi bi-caret-down\"></i>";
+                    document.getElementById("comment-downvote-" + cmtId).setAttribute("data-downvoted", false);
+
+                    vote += 2;
+                } else vote += 1;
+            }
+            else {
+                document.getElementById(id).innerHTML = "<i class=\"text-success fs-5 bi bi-caret-up\"></i>";
+                document.getElementById(id).setAttribute("data-upvoted", false);
+
+                vote -= 1;
+            }
+
+            document.getElementById("comment-votes-" + cmtId).innerText = vote + '';
+        }
+
+        function downvoteComment(id) {
+            if (!checkLogged()) return;
+
+            var cmtId = id.replace('comment-downvote-', '');
+            sendDownvoteComment(cmtId);
+
+            var vote = parseInt(document.getElementById("comment-votes-" + cmtId).innerText);
+
+            var downvoted = document.getElementById(id).getAttribute("data-downvoted") === 'true';
+            var upvoted = document.getElementById("comment-upvote-" + cmtId).getAttribute("data-upvoted") === 'true';
+            if (!downvoted) {
+                document.getElementById(id).innerHTML = "<i class=\"text-success fs-5 bi bi-caret-down-fill\"></i>";
+                document.getElementById(id).setAttribute("data-downvoted", true);
+
+                if (upvoted) {
+                    document.getElementById("comment-upvote-" + cmtId).innerHTML = "<i class=\"text-success fs-5 bi bi-caret-up\"></i>";
+                    document.getElementById("comment-upvote-" + cmtId).setAttribute("data-upvoted", false);
+
+                    vote -= 2;
+                } else vote -= 1;
+            }
+            else {
+                document.getElementById(id).innerHTML = "<i class=\"text-success fs-5 bi bi-caret-down\"></i>";
+                document.getElementById(id).setAttribute("data-downvoted", false);
+
+                vote += 1;
+            }
+
+            document.getElementById("comment-votes-" + cmtId).innerText = vote + '';
+        }
+
+        function sendUpvoteComment(cmtId) {
+            const req = new XMLHttpRequest();
+            req.open("POST", "/vote/comment/upvote?commentId=" + cmtId);
+            req.send();
+        }
+
+        function sendDownvoteComment(cmtId) {
+            const req = new XMLHttpRequest();
+            req.open("POST", "/vote/comment/downvote?commentId=" + cmtId);
+            req.send();
+        }
+
+    </script>
+
+    <script>
+        function mark(id) {
+            if (!checkLogged()) return;
+
+            sendMark();
+
+            marked = document.getElementById(id).getAttribute("data-marked") === 'true';
+
+            if (marked) {
+                document.getElementById(id).innerHTML = "<i class=\"bi bi-bookmark text-success\"></i>";
+            }
+            else {
+                document.getElementById(id).innerHTML = "<i class=\"bi bi-bookmark-check-fill text-success\"></i>"
+            }
+
+            document.getElementById(id).setAttribute("data-marked", !marked);
+        }
+
+        function sendMark() {
+            const req = new XMLHttpRequest();
+            req.open("POST", "/post/" + postId + "/mark");
+            req.send();
+        }
+    </script>
+
+</body>
+
+</html>

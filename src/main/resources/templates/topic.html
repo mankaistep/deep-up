@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{/layout/fragments :: header (~{:: #title}, ~{:: #custom-style})}">
+    <th:block id="title" th:text="'Deep Up | ' + ${topic.name}"></th:block>
+</head>
+
+<body>
+    <div th:replace="~{/layout/fragments :: navbar}"></div>
+    <div th:replace="~{/layout/fragments :: topic-bar}"></div>
+    <div th:replace="~{/layout/fragments :: topic-quote}"></div>
+
+    <div class="container px-5">
+
+        <div class="row">
+            <!-- category title -->
+            <div class="text-dark h4 my-4">
+                <i class="bi bi-arrow-up-right-circle"></i>
+                ĐỌC NHIỀU
+            </div>
+
+            <!-- top 3 -->
+            <th:block th:replace="~{/layout/post-layouts :: top3 (${top1}, ${top2}, ${top3})}">
+            </th:block>
+
+            <!-- Newest Posts -->
+            <div class="row mt-5 ms-0">
+                <!-- category title -->
+                <!-- category title -->
+                <th:block th:replace="~{/layout/fragments :: page-button (~{:: #dichme}, ${prePage}, ${nextPage})}">
+                    <div id="dichme" class="text-dark h4 my-2">
+                        <i class="bi bi-bar-chart"></i>
+                        MỚI NHẤT
+                    </div>
+                </th:block>
+
+                <div class="col-lg-9 ps-0">
+                    <!-- Posts -->
+                    <th:block th:each="post : ${posts}" >
+                        <th:block th:replace="~{/layout/post-layouts :: post (${post})}">
+                        </th:block>
+                    </th:block>
+                </div>
+
+                <!-- Side banners -->
+                <div class="col">
+                    <th:block th:replace="~{/layout/fragments :: side-banners}">
+                    </th:block>
+                </div>
+            </div>
+
+            <!-- Page button -->
+            <th:block th:replace="~{/layout/fragments :: page-button (${''}, ${prePage}, ${nextPage})}">
+            </th:block>
+
+        </div>
+    </div>
+
+
+    <!-- footer & script -->
+    <div th:replace="~{/layout/fragments :: footer}"></div>
+    <div th:replace="~{/layout/fragments :: script}"></div>
+
+</body>
+
+</html>

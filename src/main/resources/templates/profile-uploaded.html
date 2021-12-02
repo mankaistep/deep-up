@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{/layout/fragments :: header (~{:: #title}, ~{:: #customStyle})}">
+    <th:block id="title">DeepUP | Hồ sơ</th:block>
+</head>
+
+<body>
+    <div th:replace="~{/layout/fragments :: navbar}"></div>
+    <div th:replace="~{/layout/fragments :: topic-bar}"></div>
+    <div th:replace="~{/layout/profile-fragments :: profile(${profile}, ${0}, ~{:: #markedPosts})}"></div>
+
+    <!-- info -->
+    <div hidden>
+        <div id="markedPosts">
+
+            <div class="pt-3">
+                <a th:href="@{'/profile/uploaded/trang-' + ${prePage}}"
+                   class="btn btn-outline-success btn-sm"><i class="bi bi-arrow-left"></i></a>
+                <a th:href="@{'/profile/uploaded/trang-' + ${nextPage}}"
+                   class="btn btn-outline-success btn-sm"><i class="bi bi-arrow-right"></i></a>
+            </div>
+
+            <th:block th:each="post : ${posts}">
+                <th:block th:replace="~{/layout/profile-fragments :: minipost(${post})}"></th:block>
+            </th:block>
+        </div>
+    </div>
+
+    <!-- modal -->
+    <div th:if="${param.successful != null}">
+        <div class="modal fade" id="successfulModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Thành công</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Thay đổi thông tin thành công
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- footer & script -->
+    <div th:replace="~{/layout/fragments :: footer}"></div>
+    <div th:replace="~{/layout/fragments :: script}"></div>
+
+    <script type="text/javascript">
+        $(window).on('load', function() {
+            $('#successfulModal').modal('show');
+        });
+
+        window.scrollTo(0, 500);
+    </script>
+</body>
+
+</html>

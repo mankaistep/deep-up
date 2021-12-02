@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{/layout/fragments :: header (~{:: #title}, ~{:: #custom-style})}">
+    <th:block id="title" th:text="'Deep Up | ' + ${topic.name}"></th:block>
+</head>
+
+<body>
+<div th:replace="~{/layout/fragments :: navbar}"></div>
+<div th:replace="~{/layout/fragments :: topic-bar}"></div>
+<div th:replace="~{/layout/fragments :: topic-quote}"></div>
+
+<div class="container px-5">
+
+    <div class="row">
+        <div class="row mt-5 ms-0">
+            <!-- category title -->
+            <th:block th:replace="~{/layout/fragments :: page-button (${'Trang '} + ${currentPage}, ${prePage}, ${nextPage})}">
+
+            </th:block>
+
+            <div class="col-lg-9 ps-0">
+                <!-- Posts -->
+                <th:block th:each="post : ${posts}" >
+                    <th:block th:replace="~{/layout/post-layouts :: post (${post})}">
+                    </th:block>
+                </th:block>
+            </div>
+
+            <!-- Side banners -->
+            <div class="col">
+                <th:block th:replace="~{/layout/fragments :: side-banners}">
+                </th:block>
+            </div>
+        </div>
+
+        <!-- Page button -->
+        <th:block th:replace="~{/layout/fragments :: page-button (${''}, ${prePage}, ${nextPage})}">
+        </th:block>
+
+    </div>
+</div>
+
+
+<!-- footer & script -->
+<div th:replace="~{/layout/fragments :: footer}"></div>
+<div th:replace="~{/layout/fragments :: script}"></div>
+
+</body>
+
+</html>

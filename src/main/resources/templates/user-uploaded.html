@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{/layout/fragments :: header (~{:: #title}, ~{:: #customStyle})}">
+    <th:block id="title" th:text="'DeepUP | ' + ${profile.nick}"></th:block>
+</head>
+
+<body>
+    <div th:replace="~{/layout/fragments :: navbar}"></div>
+    <div th:replace="~{/layout/fragments :: topic-bar}"></div>
+    <div th:replace="~{/layout/profile-fragments :: profile(${profile}, ${0}, ~{:: #markedPosts})}"></div>
+
+    <!-- info -->
+    <div hidden>
+        <div id="markedPosts">
+
+            <div class="pt-3">
+                <a th:href="@{'../uploaded/trang-' + ${prePage}}"
+                   class="btn btn-outline-success btn-sm"><i class="bi bi-arrow-left"></i></a>
+                <a th:href="@{'../uploaded/trang-' + ${nextPage}}"
+                   class="btn btn-outline-success btn-sm"><i class="bi bi-arrow-right"></i></a>
+            </div>
+
+            <th:block th:each="post : ${posts}">
+                <th:block th:replace="~{/layout/profile-fragments :: minipost(${post})}"></th:block>
+            </th:block>
+        </div>
+    </div>
+
+    <!-- footer & script -->
+    <div th:replace="~{/layout/fragments :: footer}"></div>
+    <div th:replace="~{/layout/fragments :: script}"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            var scrollpos = localStorage.getItem('scrollpos');
+            if (scrollpos) window.scrollTo(0, scrollpos);
+        });
+
+        window.onbeforeunload = function(e) {
+            localStorage.setItem('scrollpos', window.scrollY);
+        };
+    </script>
+</body>
+
+</html>

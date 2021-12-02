@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{/layout/fragments :: header (~{:: #title}, ~{:: #customStyle})}">
+    <th:block id="title">DeepUP | Hồ sơ</th:block>
+</head>
+
+<body>
+    <div th:replace="~{/layout/fragments :: navbar}"></div>
+    <div th:replace="~{/layout/fragments :: topic-bar}"></div>
+    <div th:replace="~{/layout/profile-fragments :: profile(${profile}, ${4}, ~{:: #markedPosts})}"></div>
+
+    <!-- info -->
+    <div hidden>
+        <div id="markedPosts">
+
+            <div class="pt-3">
+                <a th:href="@{'../following/trang-' + ${prePage}}"
+                   class="btn btn-outline-success btn-sm"><i class="bi bi-arrow-left"></i></a>
+                <a th:href="@{'../following/trang-' + ${nextPage}}"
+                   class="btn btn-outline-success btn-sm"><i class="bi bi-arrow-right"></i></a>
+            </div>
+
+            <th:block th:each="following : ${followings}">
+                <th:block th:replace="~{/layout/profile-fragments :: following(${following})}"></th:block>
+            </th:block>
+        </div>
+    </div>
+
+    <!-- footer & script -->
+    <div th:replace="~{/layout/fragments :: footer}"></div>
+    <div th:replace="~{/layout/fragments :: script}"></div>
+
+    <script type="text/javascript">
+        window.scrollTo(0, 500);
+    </script>
+</body>
+
+</html>

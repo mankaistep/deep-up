@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dich me may</title>
+</head>
+<body>
+
+<!-- Top 3 -->
+<th:block th:fragment="top3 (top1, top2, top3)">
+
+    <!-- top 1 -->
+    <div class="col-5">
+        <!-- top 1 post -->
+        <a th:href="@{'/post/' + ${top1.id} + '/show'}" class="text-dark d-flex justify-content-end" style="text-decoration: none;">
+            <div class="card shadow" style="width: 90%">
+                <!-- img -->
+                <img class="card-img-top"
+                     th:src="@{'/' + ${@environment.getProperty('storage.post-images')} + '/' + ${top1.image}}"
+                     alt="Card image cap" style="height: 20rem; object-fit: cover;">
+                <div class="mx-3 mt-3">
+                    <!-- top info -->
+                    <div class="pe-5 text-uppercase" th:text="${top1.topic}" style="margin-bottom: 3%; height: 1.7rem; overflow: hidden;">
+                        TOPIC 1
+                    </div>
+
+                    <!-- title -->
+                    <div class="card-title h4" style="height: 3.75rem; overflow: hidden;"  th:text="${top1.title}">
+                        TITLE 1
+                    </div>
+
+                    <!-- subtitle -->
+                    <div class="" style="height: 3.3rem; overflow: hidden;" th:text="${top1.subtitle}">
+                        SUBTITLE 1
+                    </div>
+
+                    <!-- author -->
+                    <div class="d-flex my-2">
+                        <!-- avt -->
+                        <img class="rounded-circle"
+                             th:src="@{'/' + ${@environment.getProperty('storage.avatars')} + '/' + ${top1.avatar}}"
+                             style="width: 47px; height: 47px">
+
+                        <!-- name + date -->
+                        <div class="ms-3 mt-1 d-flex flex-column w-50">
+                            <div class="h6 m-0" th:text="${top1.userFullname}">
+                                AUTHOR 1
+                            </div>
+                            <div class="text-secondary" style="font-size: 14px" th:text="${top1.creationDate}">
+                                DATE 1
+                            </div>
+                        </div>
+
+                        <!-- views + upvote -->
+                        <div class="mt-4 ms-2 w-50" style="text-align: right;">
+                            <div class="row">
+                                <div class="col">
+                                    <i class="bi bi-eye me-1"></i><th:block th:text="${top1.views}">VIEWS 1</th:block>
+                                </div>
+                                <div class="col w-50">
+                                    <i class="bi bi-caret-up me-1"></i><th:block th:text="${top1.votes}">UPVOTES 1</th:block>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+    </div>
+
+    <!-- top 2 & 3 -->
+    <div class="col-7 pe-1">
+        <!-- top 2 -->
+        <a th:href="@{'/post/' + ${top2.id} + '/show'}" class="text-dark" style="text-decoration: none;">
+            <div class="card shadow w-100" style="height: 16.5rem; margin-bottom: 32px;">
+                <div class="row g-0">
+                    <!-- img -->
+                    <div class="col-5">
+                        <img class="card-img-top"
+                             th:src="@{'/' + ${@environment.getProperty('storage.post-images')} + '/' + ${top2.image}}"
+                             style="height: 16.3rem; object-fit: cover;">
+                    </div>
+
+                    <div class="col-7">
+                        <div class="card-body">
+                            <!-- top info -->
+                            <p class="pe-5 text-uppercase" th:text="${top2.topic}">
+                                TOPIC 2
+                            </p>
+
+                            <!-- title -->
+                            <h5 class="card-title" style="height: 3rem; overflow: hidden;" th:text="${top2.title}">
+                                TITLE 2
+                            </h5>
+
+                            <!-- subtitle -->
+                            <div class="" style="height: 4.7rem; overflow: hidden;" th:text="${top2.subtitle}">
+                                SUBTITLE 2
+                            </div>
+
+                            <!-- author -->
+                            <div class="d-flex mt-4">
+                                <!-- avt -->
+                                <img class="rounded-circle"
+                                     th:src="@{'/' + ${@environment.getProperty('storage.avatars')} + '/' + ${top2.avatar}}"
+                                     alt="" style="width: 44px; height: 44px">
+
+                                <!-- name + date -->
+                                <div class="ms-3 mt-1 d-flex flex-column w-50">
+                                    <div class="h6 m-0" th:text="${top2.userFullname}">
+                                        AUTHOR 2
+                                    </div>
+                                    <div class="text-secondary" style="font-size: 14px" th:text="${top2.creationDate}">
+                                        DATE 2
+                                    </div>
+                                </div>
+
+                                <!-- views + upvote -->
+                                <div class="mt-4 ms-2 w-50" style="text-align: right;">
+                                    <div class="row">
+                                        <div class="col">
+                                            <i class="bi bi-eye me-1"></i><th:block th:text="${top2.views}">VIEWS 2</th:block>
+                                        </div>
+                                        <div class="col w-50">
+                                            <i class="bi bi-caret-up me-1"></i><th:block th:text="${top2.votes}">UPVOTES 2</th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+
+        <!-- top 3 -->
+        <a th:href="@{'/post/' + ${top3.id} + '/show'}" class="text-dark" style="text-decoration: none;">
+            <div class="card shadow w-100 mb-2" style="height: 16.5rem;">
+                <div class="row g-0">
+                    <!-- img -->
+                    <div class="col-5">
+                        <img th:src="@{'/' + ${@environment.getProperty('storage.post-images')} + '/' + ${top3.image}}"
+                             class="card-img" alt="..." style="height: 16.3rem; object-fit: cover;">
+                    </div>
+
+                    <div class="col-7">
+                        <div class="card-body">
+                            <!-- top info -->
+                            <p class="pe-5 text-uppercase" th:text="${top3.topic}">
+                                TOPIC 3
+                            </p>
+
+                            <!-- title -->
+                            <h5 class="card-title" style="height: 3rem; overflow: hidden;"  th:text="${top3.title}">
+                                TITLE 3
+                            </h5>
+
+                            <!-- subtitle -->
+                            <div class="" style="height: 4.7rem; overflow: hidden;" th:text="${top3.subtitle}">
+                                SUBTITLE 3
+                            </div>
+
+                            <!-- author -->
+                            <div class="d-flex mt-4">
+                                <!-- avt -->
+                                <img class="rounded-circle"
+                                     th:src="@{'/' + ${@environment.getProperty('storage.avatars')} + '/' + ${top3.avatar}}"
+                                     alt=""  style="width: 44px; height: 44px">
+
+                                <!-- name + date -->
+                                <div class="ms-3 mt-1 d-flex flex-column w-50">
+                                    <div class="h6 m-0" th:text="${top3.userFullname}">
+                                        AUTHOR 3
+                                    </div>
+                                    <div class="text-secondary" style="font-size: 14px" th:text="${top3.creationDate}">
+                                        DATE 23
+                                    </div>
+                                </div>
+
+                                <!-- views + upvote -->
+                                <div class="mt-4 ms-2 w-50" style="text-align: right;">
+                                    <div class="row">
+                                        <div class="col">
+                                            <i class="bi bi-eye me-1"></i><th:block th:text="${top3.views}">VIEWS 3</th:block>
+                                        </div>
+                                        <div class="col w-50">
+                                            <i class="bi bi-caret-up me-1"></i><th:block th:text="${top3.votes}">UPVOTES 3</th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+    </div>
+</th:block>
+
+
+<!-- post -->
+<a th:fragment="post (post)" th:href="@{'/post/' + ${post.id} + '/show'}" class="text-dark" style="text-decoration: none;">
+    <div class="card mb-3 shadow mt-3 ps-0" style="height: 15rem">
+        <div class="row">
+            <!-- img -->
+            <div class="col-4">
+                <img th:src="@{'/' + ${@environment.getProperty('storage.post-images')} + '/' + ${post.image}}" alt=""
+                     class="card-img" style="height: 14.9rem; object-fit: cover;">
+            </div>
+
+            <div class="col-8">
+                <div class="mt-3 me-3">
+                    <!-- top info -->
+                    <p class="pe-5 text-uppercase" th:text="${post.topic}"></p>
+
+                    <!-- title -->
+                    <h5 class="card-title" style="height: 3rem; overflow: hidden;"  th:text="${post.title}"></h5>
+
+                    <!-- subtitle -->
+                    <p class="card-text" style="height: 3rem; overflow: hidden;"  th:text="${post.subtitle}">
+                    </p>
+
+                    <!-- author -->
+                    <div class="d-flex mt-4">
+                        <!-- avt -->
+                        <img class="rounded-circle"
+                             th:src="@{'/' + ${@environment.getProperty('storage.avatars')} + '/' + ${post.avatar}}"
+                             alt="" style="width: 44px; height: 44px">
+
+                        <!-- name + date -->
+                        <div class="ms-3 mt-1 d-flex flex-column w-50">
+                            <div class="h6 m-0" th:text="${post.userFullname}">
+                                AUTHOR NAME
+                            </div>
+                            <div class="text-secondary" style="font-size: 14px" th:text="${post.creationDate}">
+                                DATE
+                            </div>
+                        </div>
+
+                        <!-- views + upvote -->
+                        <div class="mt-4 ms-2 w-50" style="text-align: right;">
+                            <div class="row">
+                                <div class="col">
+                                    <i class="bi bi-eye me-1"></i><th:block th:text="${post.views}">VIEWS</th:block>
+                                </div>
+                                <div class="col w-50">
+                                    <i class="bi bi-caret-up me-1"></i><th:block th:text="${post.votes}">UPVOTES</th:block>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</a>
+
+
+</body>
+</html>

@@ -1,0 +1,289 @@
+<div th:fragment="profile (profile, tabId, customContent)" class="container" style="margin-top: 7%;">
+    <div class="row">
+        <!-- Info -->
+        <div class="div col-3">
+            <div class="text-center shadow pb-4 rounded">
+                <img class="rounded-circle shadow mt-5"
+                     th:src="@{'/' + ${@environment.getProperty('storage.avatars')} + '/' + ${profile.avatar}}"
+                     alt="" style="width: 150px; height: 150px;">
+
+                <!-- fullname -->
+                <div class="fw-bold mt-3 h5" th:text="${profile.fullName}">
+                    MankaiStep
+                </div>
+
+                <!-- user -->
+                <a class="mt-1 h6 text-secondary" th:href="@{'/user/' + ${profile.nick}}" style="text-decoration: none">
+                    <th:block style="font-size: 13px" th:text="'user/' + ${profile.nick}">
+                        /username/...
+                    </th:block>
+                </a>
+
+                <div sec:authorize="isAuthenticated()" th:unless="${#strings.equals(profile.username, user.username)}">
+                    <a href="../follow-check" th:unless="${isFollowed}" class="btn btn-success mt-3">
+                        Theo dõi
+                    </a>
+                    <a href="../follow-check" th:if="${isFollowed}" class="btn btn-outline-success mt-3">
+                        Huỷ theo dõi
+                    </a>
+                </div>
+
+                <hr class="mx-5 mt-4">
+
+                <div class="row mt-3 px-4">
+                    <!-- votes -->
+                    <div class="col-6">
+                        <div class="row fw-bold text-center text-secondary" style="font-size: 15px">
+                            <div>FOLLOWERS</div>
+                        </div>
+                        <div class="row text-center">
+                            <div class="fs-5 fw-bold" th:text="${profile.followers}">
+                                followers
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- views -->
+                    <div class="col-6">
+                        <div class="row fw-bold text-center text-secondary" style="font-size: 15px">
+                            <div>FOLLOWINGS</div>
+                        </div>
+                        <div class="row text-center">
+                            <div class="fs-5 fw-bold" th:text="${profile.followings}">
+                                views
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="mx-5 mt-4">
+
+                <!-- statistics -->
+                <div class="row mt-3 pb-5 px-4">
+                    <!-- votes -->
+                    <div class="col">
+                        <div class="row h5">
+                            <i class="bi bi-caret-up-fill"></i>
+                        </div>
+                        <div class="row text-center">
+                            <div class="fs-6" th:text="${profile.votes}">
+                                votes
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- views -->
+                    <div class="col">
+                        <div class="row h5">
+                            <i class="bi bi-eye-fill"></i>
+                        </div>
+                        <div class="row text-center">
+                            <div class="fs-6" th:text="${profile.views}">
+                                views
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- posts -->
+                    <div class="col">
+                        <div class="row h5">
+                            <i class="bi bi-file-earmark-text-fill"></i>
+                        </div>
+                        <div class="row text-center">
+                            <div class="fs-6" th:text="${profile.posts}">
+                                posts
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- social media -->
+                <div class="h6">Liên kết</div>
+                <a th:href="@{${profile.facebook}}" target="_blank" class="btn w-75 my-1" style="border-color: #4267B2; color: #4267B2"><i
+                        class="bi bi-facebook"></i></a>
+                <a th:href="@{${profile.github}}" target="_blank" class="btn w-75 my-1" style="border-color: #333; color: #333"><i
+                        class="bi bi-github"></i></a>
+
+            </div>
+        </div>
+
+        <!-- Right -->
+        <div class="div col">
+            <!-- Img -->
+            <div class="">
+                <img class="w-100"
+                     th:src="@{'/' + ${@environment.getProperty('storage.wallpapers')} + '/' + ${profile.wallpaper}}"
+                     style="height: 300px; object-fit: cover;" alt="">
+            </div>
+
+            <!-- Profile -->
+            <div class="mt-5 container">
+                <ul class="nav border h6 pt-2">
+                    <li class="nav-item">
+                        <a href="../uploaded/trang-1" style="text-decoration: none">
+                            <th:block th:unless="${tabId == 0}">
+                                <div class="nav-link text-success" style="cursor: pointer; height: 45px;">BÀI VIẾT</div>
+                            </th:block>
+                            <th:block th:if="${tabId == 0}">
+                                <div class="nav-link text-success fw-bold border-bottom border-5 border-success" style="cursor: pointer; height: 45px;">BÀI VIẾT</div>
+                            </th:block>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="../marked/trang-1" style="text-decoration: none">
+                            <th:block th:unless="${tabId == 1}">
+                                <div class="nav-link text-success" style="cursor: pointer; height: 45px;">ĐÃ LƯU</div>
+                            </th:block>
+                            <th:block th:if="${tabId == 1}">
+                                <div class="nav-link text-success fw-bold border-bottom border-5 border-success" style="cursor: pointer; height: 45px;">ĐÃ LƯU</div>
+                            </th:block>
+                        </a>
+                    </li>
+
+                    <!-- profile -->
+                    <th:block sec:authorize="isAuthenticated()" th:if="${#strings.equals(profile.username, user.username)}">
+                        <li class="nav-item">
+                            <a href="../edit-profile/thong-tin" style="text-decoration: none">
+                                <th:block th:unless="${tabId == 2}">
+                                    <div class="nav-link text-success" style="cursor: pointer; height: 45px;">HỒ SƠ</div>
+                                </th:block>
+                                <th:block th:if="${tabId == 2}">
+                                    <div class="nav-link text-success fw-bold border-bottom border-5 border-success" style="cursor: pointer; height: 45px;">HỒ SƠ</div>
+                                </th:block>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="../password/doi-mat-khau" style="text-decoration: none">
+                                <th:block th:unless="${tabId == 3}">
+                                    <div class="nav-link text-success" style="cursor: pointer; height: 45px;">MẬT KHẨU</div>
+                                </th:block>
+                                <th:block th:if="${tabId == 3}">
+                                    <div class="nav-link text-success fw-bold border-bottom border-5 border-success" style="cursor: pointer; height: 45px;">MẬT KHẨU</div>
+                                </th:block>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="../following/trang-1" style="text-decoration: none">
+                                <th:block th:unless="${tabId == 4}">
+                                    <div class="nav-link text-success" style="cursor: pointer; height: 45px;">THEO DÕI</div>
+                                </th:block>
+                                <th:block th:if="${tabId == 4}">
+                                    <div class="nav-link text-success fw-bold border-bottom border-5 border-success" style="cursor: pointer; height: 45px;">ĐANG THEO DÕI</div>
+                                </th:block>
+                            </a>
+                        </li>
+                    </th:block>
+                </ul>
+
+                <div class="container border mt-3 pb-3">
+
+                    <th:block th:replace="${customContent}">
+
+                    </th:block>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<th:block th:fragment="following (following)">
+    <div class="mb-3 border mt-3 ps-0">
+        <div class="row py-3">
+            <!-- avt -->
+            <div class="col-5">
+                <a th:href="@{'/user/' + ${following.nick}}" style="text-decoration: none">
+                    <div class="row">
+                        <div class="col-3 pe-1" style="text-align: right;">
+                            <img class="rounded-circle"
+                                 th:src="@{'/' + ${@environment.getProperty('storage.avatars')} + '/' + ${following.avatar}}"
+                                 src="https://i.pinimg.com/originals/3d/c4/49/3dc449b04d9ace524a0ecd247e1fdc83.png"
+                                 alt="" style="height: 60px; width: 60px;">
+                        </div>
+                        <div class="col pt-2">
+                            <div class="fw-bold text-dark" style="font-size: 15px;" th:text="${following.fullName}">
+                                Nguyễn Huy Hoàng
+                            </div>
+                            <div class="text-secondary" style="font-size: 14px"
+                                 th:text="${following.followers} + ' người theo dõi'">
+                                50 người theo dõi
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- views + upvote -->
+            <div class="col-7 pt-2 pe-5" style="text-align: right;">
+                <a th:href="@{'/user/' + ${following.nick} + '/follow-check'}" class="btn btn-outline-success">Bỏ theo dõi</a>
+            </div>
+
+        </div>
+    </div>
+</th:block>
+
+<a th:fragment="minipost (post)" th:href="@{'/post/' + ${post.id} + '/show'}" class="text-dark" style="text-decoration: none;">
+    <div class="card mb-3 shadow mt-3 ps-0" style="width: 90%; height: 200px">
+        <div class="row g-0">
+            <!-- img -->
+            <div class="col-4">
+                <img th:src="@{'/' + ${@environment.getProperty('storage.post-images')} + '/' + ${post.image}}" alt=""
+                     class="card-img" style="height: 199px; object-fit: cover;">
+            </div>
+
+            <div class="col-8">
+                <div class="card-body">
+                    <!-- top info -->
+                    <p class="text-uppercase mb-1" th:text="${post.topic}" style="font-size: 14px;">
+                        TOPIC
+                    </p>
+
+                    <!-- title -->
+                    <h5 class="card-title" style="font-size: 19px; height: 1.5rem; overflow: hidden;"  th:text="${post.title}">
+                        This is the fucking title
+                    </h5>
+
+                    <!-- subtitle -->
+                    <p class="card-text" style="font-size: 15px; height: 3rem; overflow: hidden;"  th:text="${post.subtitle}">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae dolores voluptatibus id officia iste, optio quo a? Reiciendis veritatis, Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatem perferendis nihil, facilis animi iste provident molestias at iusto accusantium soluta minima placeat non fugiat vitae nulla harum et rem deserunt.
+                    </p>
+
+                    <!-- author -->
+                    <div class="d-flex mt-4">
+                        <!-- avt -->
+                        <img class="rounded-circle"
+                             th:src="@{'/' + ${@environment.getProperty('storage.avatars')} + '/' + ${post.avatar}}"
+                             src="https://i.pinimg.com/originals/3d/c4/49/3dc449b04d9ace524a0ecd247e1fdc83.png"
+                             alt="" style="width: 37px; height: 37px">
+
+                        <!-- name + date -->
+                        <div class="ms-2 d-flex flex-column w-50">
+                            <div class="fw-bold" style="font-size: 13px;" th:text="${post.userFullname}">
+                                AUTHOR NAME
+                            </div>
+                            <div class="text-secondary" style="font-size: 12px" th:text="${post.creationDate}">
+                                DATE
+                            </div>
+                        </div>
+
+                        <!-- views + upvote -->
+                        <div class="mt-3 ms-2 w-50 align-items-end justify-content-end" style="text-align: right;">
+                            <div class="row" style="font-size: 13px">
+                                <div class="col">
+                                    <i class="bi bi-eye me-1"></i><th:block th:text="${post.views}">6</th:block>
+                                </div>
+                                <div class="col w-50">
+                                    <i class="bi bi-caret-up me-1"></i><th:block th:text="${post.votes}">6</th:block>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</a>

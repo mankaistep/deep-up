@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:fragment="header (title, customStyle)">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="/icon/icon.ico" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.1/font/bootstrap-icons.css">
+
+    <!-- custom style -->
+    <th:block th:replace="${customStyle} ?: ~{}"></th:block>
+
+    <!-- title -->
+    <title th:insert="${title}"></title>
+</head>
+<body>
+
+<!-- profile -->
+<div th:fragment="profile" class="containter text-center" style="margin-top: 7%">
+    <img class="rounded-circle shadow-lg" th:src="@{'/' + ${@environment.getProperty('storage.avatars')} + '/' + ${user.avatar}}" alt=""
+         style="width: 250px; height: 250px; border: 1px solid #24b351;">
+
+    <!-- fullname -->
+    <div class="fw-bold mt-3 h5" th:text="${user.fullName}">
+        Fullname
+    </div>
+
+    <!-- user -->
+    <a th:href="@{'/user/' + ${user.nick}}">
+        <div class="mt-1 h6" th:text="'user/' + ${user.nick}">
+            user/[username]
+        </div>
+    </a>
+
+    <!-- views + upvotes -->
+    <div class="h6">
+        <div class="d-inline me-3">
+            <i class="bi bi-caret-up-fill"></i>
+            <p class="d-inline me-3" th:text="${userVotes}">
+                VIEWS
+            </p>
+        </div>
+        <div class="d-inline ms-3">
+            <i class="bi bi-file-earmark-text-fill"></i>
+            <p class="d-inline me-3" th:text="${userPosts}">
+                VOTES
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<!-- script -->
+<div th:fragment="script">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/script/ckeditor.js"></script>
+    <script src="/script/script.js"></script>
+
+    <script>
+        function send() {
+            var today = new Date();
+
+            var startDate = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + (today.getDate() - 2);
+            var endDate = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + (today.getDate() - 1);
+
+            // Vietnam
+            const xmlR = new XMLHttpRequest();
+            xmlR.open("GET", "https://api.covid19api.com/country/vietnam?from=" + startDate + "&to=" + endDate);
+            xmlR.onloadend = function () {
+                const arr = JSON.parse(xmlR.responseText);
+
+                const todayCases = arr[1].Confirmed - arr[0].Confirmed;
+                const todayDeaths = arr[1].Deaths - arr[0].Deaths;
+
+                document.getElementById("todayCases").innerText = numberWithCommas(todayCases);
+                document.getElementById("todayDeaths").innerText = numberWithCommas(todayDeaths);
+            };
+            xmlR.send();
+
+            // Global
+            const xmlR2 = new XMLHttpRequest();
+            xmlR2.open("GET", "https://api.covid19api.com/summary");
+            xmlR2.onloadend = function () {
+                const arr = JSON.parse(xmlR2.responseText);
+
+                const global = arr.Global;
+
+                const cases = global.NewConfirmed;
+                const deaths = global.NewDeaths;
+
+                document.getElementById("globalCases").innerText = numberWithCommas(cases);
+                document.getElementById("globalDeaths").innerText = numberWithCommas(deaths);
+            };
+            xmlR2.send();
+        }
+
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        send();
+    </script>
+</div>
+
+<!-- nav bar - not logged in -->
+<th:block th:fragment="navbar">
+    <!-- nar var - not authenticated -->
+    <div sec:authorize="!isAuthenticated()" th:fragment="navbar" class="container-lg bg-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <!-- home page -->
+                <a class="navbar-brand" href="/">
+                    <div class="fw-bold">DEEP UP</div>
+                </a>
+                <div class="collapse navbar-collapse">
+                    <div style="width: 67%"></div>
+                    <div class="d-flex justify-content-end">
+                        <input class="form-control me-2" type="search" placeholder="Tìm kiếm" aria-label="Search">
+                        <button class="btn btn-outline-secondary btn-circle">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <a href="/login">
+                    <button type="button" class="btn btn-outline-success me-2">Đăng nhập</button>
+                </a>
+                <a href="/register">
+                    <button type="button" class="btn btn-success">Đăng ký</button>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- nav bar - authenticated -->
+    <div sec:authorize="isAuthenticated()" class="container-lg bg-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <!-- home page -->
+                <a class="navbar-brand" href="/">
+                    <div class="fw-bold">DEEP UP</div>
+                </a>
+                <div class="collapse navbar-collapse">
+                    <div style="width: 67%"></div>
+                    <div class="d-flex justify-content-end">
+                        <input class="form-control me-2" type="search" placeholder="Tìm kiếm" aria-label="Search">
+                        <button class="btn btn-outline-secondary btn-circle">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="dropdown me-3" style="width: 3%; height: 3%">
+                    <a th:href="@{'/user/' + ${user.nick}}">
+                        <img class="rounded-circle me-3"
+                             th:src="@{'/' + ${@environment.getProperty('storage.avatars')} + '/' + ${user.avatar}}" alt=""
+                             style="width: 42px; height: 42px">
+                    </a>
+
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a th:href="@{'/user/' + ${user.nick}}" class="dropdown-item">
+                            <div class="fw-bold" th:text="${user.fullName}">
+                                Full name
+                            </div>
+                            <div class="" th:text="'user/' + ${user.nick}">
+                                user/nick
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/profile" style="background-color: #f2fff6">
+                            <i class="bi bi-person-fill"></i>
+                            Hồ sơ
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/logout" style="background-color: #f2fff6">
+                            <i class="bi bi-box-arrow-right"></i>
+                            Đăng xuất
+                        </a>
+                    </div>
+                </div>
+
+                <!-- create button -->
+                <a href="/create-post">
+                    <button type="button" class="btn btn-success fw-bold">
+                        <i class="bi bi-plus-lg mt-1"></i>
+                        Tạo bài viết
+                    </button>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+</th:block>
+
+
+
+<!-- topic bar -->
+<div th:fragment="topic-bar" class="container-lg bg-success">
+    <div class="d-flex justify-content-center bd-highlight">
+        <a href="/" class="text-decoration-none">
+            <div class="p-2 bd-highlight text-light fw-bold me-5 text-uppercase topic-selector">Nổi bật</div>
+        </a>
+
+        <th:block th:each="topic : ${topics}">
+            <a th:href="@{'/topic/' + ${topic.url}}" class="text-decoration-none text-uppercase topic-selector">
+                <div class="p-2 bd-highlight text-light mx-2" th:text="${topic.name}"></div>
+            </a>
+        </th:block>
+    </div>
+</div>
+
+<!-- topic quote  -->
+<div th:fragment="topic-quote" class="container-sm mt-3 mb-3"
+     style="width: 60%; background-size: 100%; height: 170px;"
+     th:styleappend="'background-image: url(/' + ${topicImage} + ');'">
+
+    <div class="" style="height: 10%"></div>
+    <div class="text-center text-light py-5 h2 bg-dark" style="opacity: 0.8;" th:text="${topicQuote}"></div>
+</div>
+
+<!-- footer -->
+<
+<div th:fragment="footer" class="text-center" style="margin-top: 300px">by Manaki 2021</div>
+
+<!-- side banners -->
+<th:block th:fragment="side-banners">
+    <!-- Su kien -->
+    <div class="mt-3 ms-4 container border border-secondary rounded shadow"
+         style="height: 25rem; width: 124%; background-size: 100% 100%; background-image: url('https://i.imgur.com/L3mDqNe.png');">
+    </div>
+
+    <!-- COVID -->
+    <div class="mt-3 ms-4 container border border-secondary rounded shadow" style="width: 124%">
+        <!-- Viet Nam -->
+        <div class="mt-2 mb-4 fw-light" style="font-size: 22px;">COVID-19 Việt Nam hôm qua</div>
+
+        <!-- Nhiem -->
+        <div class="row">
+            <div class="col-4">
+                <div class="fw-bold h6" style="padding-top: 2%">Nhiễm: </div>
+            </div>
+            <div class="col">
+                <div class="d-inline fw-bold text-danger" style="font-size: 17px;">
+                    <div id="todayCases" class="d-inline">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tu vong -->
+        <div class="row">
+            <div class="col-4">
+                <div class="fw-bold h6" style="padding-top: 2%">Tử vong: </div>
+            </div>
+            <div class="col">
+                <div class="d-inline fw-bold text-danger" style="font-size: 17px;">
+                    <div id="todayDeaths" class="d-inline">0</div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="mt-5 mb-4 fw-light" style="font-size: 22px;">COVID-19 Toàn cầu hôm qua</div>
+
+        <!-- Nhiem -->
+        <div class="row">
+            <div class="col-4">
+                <div class="fw-bold h6" style="padding-top: 2%">Nhiễm: </div>
+            </div>
+            <div class="col">
+                <div class="d-inline fw-bold text-danger" style="font-size: 17px;">
+                    <div id="globalCases" class="d-inline">0</div>
+                </div>
+            </div>
+        </div>
+        <!-- Tu vong -->
+        <div class="row">
+            <div class="col-4">
+                <div class="fw-bold h6" style="padding-top: 2%">Tử vong: </div>
+            </div>
+            <div class="col">
+                <div class="d-inline fw-bold text-danger" style="font-size: 17px;">
+                    <div id="globalDeaths" class="d-inline">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fst-italic font-light mt-4 text-center mb-3">
+            Việt Nam chung tay thực hiện thông điệp 5K đẩy lùi đại dịch COVID-19
+        </div>
+    </div>
+</th:block>
+
+<th:block th:fragment="page-button (label, prePage, nextPage)">
+    <div class="col-lg-9 ps-0 mt-4">
+        <div class="row" style="width: 56.5rem; text-align: right;">
+            <div class="col" style="text-align: left;">
+                <div class="text-dark h4 my-2">
+                    <p class="d-inline" th:utext="${label}"></p>
+                </div>
+            </div>
+            <div class="col">
+                <a class="btn btn-outline-success" th:href="@{'/topic/' + ${topic.url} + '/trang-' + ${prePage}}">
+                    <i class="bi bi-caret-left-fill"></i>
+                    Trang trước
+                </a>
+                <a class="btn btn-outline-success ms-3" th:href="@{'/topic/' + ${topic.url} + '/trang-' + ${nextPage}}">
+                    Trang sau
+                    <i class="bi bi-caret-right-fill"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<div th:fragment="comment (comment)" class="ps-3 py-3 px-2 border-start border-3" style="margin-left: 6%; margin-right: 6%;">
+    <div class="d-flex">
+        <!-- avt -->
+        <img class="rounded-circle"
+             th:src="@{'/' + ${@environment.getProperty('storage.avatars')} + '/' + ${comment.avatar}}"
+             alt="" style="width: 44px; height: 44px">
+
+        <!-- name + date -->
+        <div class="ms-3 d-flex flex-column w-50" style="line-height: 50%;">
+            <div class="h6" th:text="${comment.fullName}">
+                %comment_user_fullname%
+            </div>
+            <div class="text-secondary" style="font-size: 12px" th:text="${comment.creationDate}">
+                %command_creation_date%
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-2" th:text="${comment.content}">
+        %comment_content%
+    </div>
+
+    <div class="mt-2">
+        <div class="col">
+            <button th:attr="data-upvoted=${comment.upVoted}"
+                    th:id="'comment-upvote-' + ${comment.id}" class="d-inline" onclick="upvoteComment(this.id)"
+                    style="background: transparent; border: none !important;">
+                <th:block th:if="${comment.upVoted}">
+                    <i class="text-success fs-5 bi bi-caret-up-fill"></i>
+                </th:block>
+                <th:block th:unless="${comment.upVoted}">
+                    <i class="text-success fs-5 bi bi-caret-up"></i>
+                </th:block>
+            </button>
+            <div th:id="'comment-votes-' + ${comment.id}" class="d-inline-block text-center" style="width: 25px;" th:text="${comment.votes}">
+                %command_votes%
+            </div>
+            <button th:attr="data-downvoted=${comment.downVoted}"
+                    th:id="'comment-downvote-' + ${comment.id}" class="d-inline" onclick="downvoteComment(this.id)"
+                    style="background: transparent; border: none !important;">
+                <th:block th:if="${comment.downVoted}">
+                    <i class="text-success fs-5 bi bi-caret-down-fill"></i>
+                </th:block>
+                <th:block th:unless="${comment.downVoted}">
+                    <i class="text-success fs-5 bi bi-caret-down"></i>
+                </th:block>
+            </button>
+            <p class="d-inline text-secondary fw-bold" style="cursor: pointer; font-size: 15px" data-shown="false" sec:authorize="isAuthenticated()" th:id="'comment-' + ${comment.id}"
+               th:onclick="'showCommentEnter(this.id, ' + ${comment.id} + ')'">Trả lời</p>
+        </div>
+    </div>
+
+    <div class="ms-4" th:id="'enter-comment-' + ${comment.id}"></div>
+
+    <th:block th:each="childComment : ${comment.childs}">
+        <div class="ms-4">
+            <div th:replace="~{/layout/fragments :: comment (${childComment})}"></div>
+        </div>
+    </th:block>
+
+</div>
+
+</body>
+</html>
